@@ -1,0 +1,25 @@
+{
+  "product": {
+    "sku": "SKU-12345",
+    "name": "Galaxy S25 Ultra",
+    "price": 1499.99,
+    "status": 1,
+    "visibility": 4,
+    "type_id": "simple",
+    "attribute_set_id": 2,
+    "weight": 0.5,
+    "extension_attributes": {
+      "category_links": [
+        { "position": 0, "category_id": "3" },
+        { "position": 1, "category_id": "2" }
+      ]
+    },
+    "custom_attributes": [
+      { "attribute_code": "brand", "value": "Samsung" },
+      { "attribute_code": "os", "value": "Android" },
+      { "attribute_code": "screen_size", "value": "6.9" },
+      { "attribute_code": "battery_life", "value": "24" },
+      { "attribute_code": "description", "value": "Flagship Android phone with advanced camera and display." }
+    ]
+  }
+}
