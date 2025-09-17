@@ -1,0 +1,43 @@
+{
+  "id": 1,
+  "name": "Root",
+  "children_data": [
+    {
+      "id": 2,
+      "name": "Phones",
+      "children_data": [
+        { "id": 3, "name": "Android", "children_data": [] },
+        { "id": 4, "name": "iOS", "children_data": [] }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Computers",
+      "children_data": [
+        { "id": 6, "name": "Laptops", "children_data": [] },
+        { "id": 7, "name": "Desktops", "children_data": [] },
+        { "id": 8, "name": "Accessories", "children_data": [
+          { "id": 9, "name": "Keyboards", "children_data": [] },
+          { "id": 10, "name": "Mice", "children_data": [] }
+        ]}
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Home Appliances",
+      "children_data": [
+        { "id": 12, "name": "Refrigerators", "children_data": [] },
+        { "id": 13, "name": "Washing Machines", "children_data": [] }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Books",
+      "children_data": [
+        { "id": 15, "name": "Fiction", "children_data": [] },
+        { "id": 16, "name": "Non-Fiction", "children_data": [] },
+        { "id": 17, "name": "Children's Books", "children_data": [] }
+      ]
+    }
+  ]
+}
