@@ -158,26 +158,26 @@ class MagentoAPIClient:
     def update_product(self, sku: str, payload: dict):
         return self._make_request("PUT", f"/products/{sku}", data=json.dumps(payload))
 
+import tkinter as tk
+from tkinter import ttk
 
-# --------------- Category Tree (checkbox) ---------------
 class CheckboxTree:
-    """Treeview with check/uncheck behavior and search filter."""
     def __init__(self, parent: ttk.Frame):
         self.frame = ttk.Frame(parent)
         self.search_var = tk.StringVar()
+
+        # Search bar
         top = ttk.Frame(self.frame)
         top.pack(fill='x')
         ttk.Label(top, text="Filter:").pack(side='left')
         self.search_entry = ttk.Entry(top, textvariable=self.search_var)
         self.search_entry.pack(side='left', fill='x', expand=True, padx=5, pady=5)
         self.search_entry.bind("<KeyRelease>", self._on_filter)
+
+        # Treeview
         self.tree = ttk.Treeview(self.frame, show='tree')
         self.tree.pack(fill='both', expand=True)
         self.tree.bind('<ButtonRelease-1>', self._on_click)
-
-        # icons (tiny 12x12 pngs, base64)
-        self._checked = tk.PhotoImage(data=self._b64_checked())
-        self._unchecked = tk.PhotoImage(data=self._b64_unchecked())
 
     def widget(self):
         return self.frame
@@ -188,42 +188,45 @@ class CheckboxTree:
 
     def build(self, root_node: dict):
         self.clear()
+
         def add_node(node, parent=""):
             nid = str(node.get('id', 'root'))
-            text = f" {node.get('name','(unnamed)')}"
-            self.tree.insert(parent, 'end', iid=nid, text=text, image=self._unchecked, tags=('unchecked',))
+            label = node.get('name', '(unnamed)')
+            text = f"[ ] {label}"
+            self.tree.insert(parent, 'end', iid=nid, text=text, tags=('unchecked',))
             for child in node.get('children_data', []) or []:
                 add_node(child, nid)
+
         add_node(root_node)
         self.tree.heading("#0", text="Select Categories", anchor='w')
 
     def _on_click(self, event):
         item = self.tree.identify_row(event.y)
-        if not item:
-            return
-        self.toggle(item)
+        if item:
+            self.toggle(item)
 
     def toggle(self, item: str, recursive=True):
         tags = self.tree.item(item, 'tags')
-        is_checked = 'checked' in tags
-        new_tags = ('unchecked',)
-        new_img = self._unchecked
-        if not is_checked:
-            new_tags = ('checked',)
-            new_img = self._checked
-        self.tree.item(item, tags=new_tags, image=new_img)
+        label = self.tree.item(item, 'text')[4:]  # Strip checkbox prefix
+
+        if 'checked' in tags:
+            self.tree.item(item, text=f"[ ] {label}", tags=('unchecked',))
+        else:
+            self.tree.item(item, text=f"[✓] {label}", tags=('checked',))
+
         if recursive:
             for ch in self.tree.get_children(item):
                 self.toggle(ch, recursive=True)
 
     def _on_filter(self, *_):
-        q = self.search_var.get().strip().lower()
-        # naive filter: collapse items that don't match text in label; show parents if any child matches
+        query = self.search_var.get().strip().lower()
+
         def match_any(item):
-            text = self.tree.item(item, 'text').strip().lower()
-            if q in text:
+            text = self.tree.item(item, 'text')[4:].lower()
+            if query in text:
                 return True
             return any(match_any(ch) for ch in self.tree.get_children(item))
+
         for item in self.tree.get_children(""):
             self._apply_filter(item, match_any)
 
@@ -237,31 +240,17 @@ class CheckboxTree:
             self.tree.detach(item)
 
     def get_checked_ids(self):
-        out = []
+        checked = []
+
         def walk(item):
             if 'checked' in self.tree.item(item, 'tags'):
-                out.append(item)
+                checked.append(item)
             for ch in self.tree.get_children(item):
                 walk(ch)
+
         for root in self.tree.get_children(""):
             walk(root)
-        return out
-
-    @staticmethod
-    def _b64_checked():
-        # simple dark checkbox (white check)
-        return (
-            "iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAR0lEQVQoU2NkwA7+////x0AGGJgY/8eB" \
-            "JgYHh0YkQwZgYGB4f//PwMDA0GQyEwGgQwGQwRjQGQyEwGgQxgGAAWlBqkqT1n8AAAAABJRU5ErkJggg=="
-        )
-
-    @staticmethod
-    def _b64_unchecked():
-        return (
-            "iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAPUlEQVQoU2NkwA7+////x0AGGJgY/9+" \
-            "DgYGBoYGBgZmBgYGBgQGQyEwGgQwGQwRjQGQyEwGgQxgGAARnBqW3e9o8wAAAABJRU5ErkJggg=="
-        )
-
+        return checked
 
 # --------------- Main Application ---------------
 class AdvancedMagentoToolPro:
