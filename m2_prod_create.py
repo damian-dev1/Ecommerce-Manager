@@ -17,7 +17,6 @@ CONFIG_FILE = "config.json"
 DEFAULT_TIMEOUT = 30  # seconds
 MAX_WORKERS = min(8, (os.cpu_count() or 4))
 class DarkTheme:
-    """Apply a clean dark theme to ttk widgets."""
     BG = "#0f0f10"
     PANEL = "#13141a"
     PANEL2 = "#1a1b1f"
@@ -60,7 +59,6 @@ def add_context_menu(widget: tk.Widget):
         menu.tk_popup(event.x_root, event.y_root)
     widget.bind("<Button-3>", show_menu)
 class MagentoAPIClient:
-    """Handles all communication with the Magento 2 API (with retries & timeouts)."""
     def __init__(self, base_url: str, token: str, timeout: int = DEFAULT_TIMEOUT):
         self.base_url = base_url.rstrip('/')
         self.timeout = timeout
@@ -115,11 +113,6 @@ class MagentoAPIClient:
     def update_product(self, sku: str, payload: dict):
         return self._make_request("PUT", f"/products/{sku}", data=json.dumps(payload))
 class SimpleCategoryTree:
-    """Simplified category chooser without images.
-    - No PhotoImage (avoids TclError on some Tk builds)
-    - Checkbox-like UX using text prefixes: "[ ]" / "[x]"
-    - Load from JSON (list or Magento-like dict with children/children_data)
-    """
     def __init__(self, parent: ttk.Frame):
         self.frame = ttk.Frame(parent)
         self.search_var = tk.StringVar()
@@ -140,7 +133,6 @@ class SimpleCategoryTree:
         for i in self.tree.get_children(""):
             self.tree.delete(i)
     def build(self, root_node: dict):
-        """Magento /categories style root dict (with children_data)."""
         self.clear()
         def add_node(node, parent=""):
             nid = str(node.get('id', 'root'))
@@ -151,9 +143,6 @@ class SimpleCategoryTree:
         add_node(root_node)
         self.tree.heading('#0', text='Select Categories', anchor='w')
     def build_from_json(self, data):
-        """Accepts either a list of nodes or a root dict. Each node supports keys:
-        id, name, children or children_data.
-        """
         self.clear()
         nodes = []
         if isinstance(data, list):
@@ -818,5 +807,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = AdvancedMagentoToolPro(root)
     root.mainloop()
-import os
-import json
